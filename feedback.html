@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RoomTwin – Feedback</title>
+  <style>
+    :root{
+      --bg:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --shadow2:0 6px 16px rgba(2,6,23,.07);
+      --chip:#f1f5f9;
+      --blue:#2563eb; --green:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    header{border-bottom:1px solid var(--line); background:rgba(255,255,255,.92); backdrop-filter:blur(10px); position:sticky; top:0; z-index:10}
+    .wrap{max-width:1100px; margin:0 auto; padding:16px 18px}
+    .top{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--green)); box-shadow:0 10px 25px rgba(37,99,235,.18)}
+    h1{margin:0;font-size:16px}
+    .sub{font-size:12px;color:var(--muted)}
+    nav{display:flex; gap:10px; flex-wrap:wrap}
+    a.nav{font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    a.nav.active{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06); color:var(--text); font-weight:900}
+
+    main{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow2);overflow:hidden}
+    .hd{padding:14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .bd{padding:14px}
+    .tag{background:var(--chip); border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:12px; color:var(--muted)}
+    .list{display:flex; flex-direction:column; gap:10px}
+    .fb{border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff}
+    .fbTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .fbTitle{font-weight:900}
+    .fbMeta{margin-top:4px; font-size:12px; color:var(--muted)}
+    .fbText{margin-top:10px; font-size:13px; line-height:1.45}
+    .stars{font-size:14px; letter-spacing:1px; color:#f59e0b; white-space:nowrap}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    button{appearance:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:900}
+    .note{margin-top:12px; padding:12px; border-radius:16px; border:1px dashed #cbd5e1; color:var(--muted); font-size:12px; line-height:1.4}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>RoomTwin – Feedback</h1>
+          <div class="sub">Falske tilbakemeldinger + demo-innlegg fra dashboard/live</div>
+        </div>
+      </div>
+      <nav>
+        <a class="nav" href="index.html">Forside</a>
+        <a class="nav" href="user.html">Bruker</a>
+        <a class="nav" href="dashboard.html">Dashboard</a>
+        <a class="nav" href="twin-live.html">Live tvilling</a>
+        <a class="nav active" href="feedback.html">Feedback</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="hd">
+      <strong style="font-size:14px;">Tilbakemeldinger</strong>
+      <span class="tag">Sommer 2025 · demo</span>
+    </div>
+    <div class="bd">
+      <div class="btnrow">
+        <button id="btnAdd">Legg inn falsk “for varmt”</button>
+        <button id="btnClear">Tøm ekstra demo-innlegg</button>
+      </div>
+
+      <div class="note">
+        Trykk “Varm sommerdag” i Dashboard eller Live tvilling → den dukker opp her (lagret i nettleseren).
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  if(!localStorage.getItem("roomtwin_selected_room")){
+    localStorage.setItem("roomtwin_selected_room","r1");
+  }
+
+  const base = [
+    { room:"Grupperom 1", date:"19. juni 2025", time:"13:40", stars:4, text:"Fint rom, men litt varmt når sola står på." },
+    { room:"Grupperom 2", date:"17. juni 2025", time:"09:15", stars:3, text:"Lufta ble dårlig ganske fort. Føltes tungt." },
+    { room:"Grupperom 3", date:"22. juni 2025", time:"14:55", stars:2, text:"Det var for mye støy i dag. Vanskelig å fokusere." },
+    { room:"Grupperom 4", date:"23. juni 2025", time:"10:30", stars:4, text:"Det er for varmt i dag. Føles tett selv om vi er få." },
+  ];
+
+  const key="roomtwin_extra_feedback";
+
+  function getExtra(){
+    return JSON.parse(localStorage.getItem(key) || "[]");
+  }
+  function setExtra(arr){
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+
+  function stars(n){
+    return "★★★★★".slice(0,n) + "☆☆☆☆☆".slice(0,5-n);
+  }
+
+  function render(){
+    const all = [...getExtra(), ...base];
+    document.getElementById("list").innerHTML = all.map(f=>`
+      <div class="fb">
+        <div class="fbTop">
+          <div>
+            <div class="fbTitle">${f.text}</div>
+            <div class="fbMeta">${f.room} · ${f.date} · ${f.time}</div>
+          </div>
+          <div class="stars" aria-label="${f.stars} av 5">${stars(f.stars)}</div>
+        </div>
+        <div class="fbText">
+          (Demo) Dette illustrerer app-tilbakemeldinger som kan kobles mot sensordata i digital tvilling.
+        </div>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("btnAdd").addEventListener("click", ()=>{
+    const extra = getExtra();
+    extra.unshift({ room:"Grupperom 4", date:"24. juni 2025", time:"12:45", stars:3, text:"Det er for varmt i dag." });
+    setExtra(extra);
+    render();
+  });
+
+  document.getElementById("btnClear").addEventListener("click", ()=>{
+    setExtra([]);
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

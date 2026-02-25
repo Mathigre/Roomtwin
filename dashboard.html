@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RoomTwin – Dashboard</title>
+  <style>
+    :root{
+      --bg:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --shadow2:0 6px 16px rgba(2,6,23,.07);
+      --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444; --info:#2563eb;
+      --chip:#f1f5f9;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    header{border-bottom:1px solid var(--line); background:rgba(255,255,255,.92); backdrop-filter:blur(10px); position:sticky; top:0; z-index:10}
+    .wrap{max-width:1200px; margin:0 auto; padding:16px 18px}
+    .top{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#16a34a); box-shadow:0 10px 25px rgba(37,99,235,.18)}
+    h1{margin:0;font-size:16px}
+    .sub{font-size:12px;color:var(--muted)}
+    nav{display:flex; gap:10px; flex-wrap:wrap}
+    a.nav{font-size:12px; color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:999px; border:1px solid var(--line); background:#fff}
+    a.nav.active{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06); color:var(--text); font-weight:900}
+
+    main{max-width:1200px; margin:0 auto; padding:18px}
+    .layout{display:grid; grid-template-columns: 340px 1fr; gap:14px; align-items:start}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}}
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow2); overflow:hidden}
+    .hd{padding:14px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .bd{padding:14px}
+    .tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted);
+      background:var(--chip); border:1px solid var(--line); padding:6px 10px; border-radius:999px; white-space:nowrap}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)} .dot.info{background:var(--info)}
+    .roomList{display:flex; flex-direction:column; gap:10px}
+    .roomBtn{width:100%; text-align:left; padding:12px; border-radius:14px; border:1px solid var(--line); background:#fff; cursor:pointer}
+    .roomBtn.active{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.04)}
+    .roomTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .roomName{font-weight:900}
+    .roomMeta{margin-top:4px; font-size:12px; color:var(--muted)}
+    .grid{display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}
+    .metric{border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff}
+    .k{display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--muted)}
+    .badge{padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:11px; font-weight:800; color:var(--muted)}
+    .badge.ok{border-color:rgba(22,163,74,.35); color:rgba(22,163,74,.95)}
+    .badge.warn{border-color:rgba(245,158,11,.35); color:rgba(245,158,11,.95)}
+    .badge.bad{border-color:rgba(239,68,68,.35); color:rgba(239,68,68,.95)}
+    .v{margin-top:8px; font-size:24px; font-weight:900}
+    .small{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.35}
+    .split{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:720px){.split{grid-template-columns:1fr}}
+    .control{border:1px solid var(--line); border-radius:16px; padding:12px; background:#fff}
+    .row{display:flex; justify-content:space-between; align-items:center; gap:10px}
+    label{font-size:12px; color:var(--muted)}
+    input[type="range"]{width:100%}
+    .toggle{width:46px;height:26px;border-radius:999px;background:#e2e8f0;border:1px solid #cbd5e1;position:relative;cursor:pointer}
+    .toggle::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(2,6,23,.18);transition:transform .18s ease}
+    .toggle.on{background:rgba(22,163,74,.18); border-color:rgba(22,163,74,.35)}
+    .toggle.on::after{transform:translateX(20px)}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap}
+    button{appearance:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:900}
+    button.primary{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06)}
+    .note{padding:12px;border-radius:16px;border:1px dashed #cbd5e1;background:#fff;color:var(--muted);font-size:12px;line-height:1.4}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>RoomTwin – Dashboard</h1>
+          <div class="sub">Velg rom 1–4 · Se sensorer og simuler tiltak</div>
+        </div>
+      </div>
+      <nav>
+        <a class="nav" href="index.html">Forside</a>
+        <a class="nav" href="user.html">Bruker</a>
+        <a class="nav active" href="dashboard.html">Dashboard</a>
+        <a class="nav" href="twin-live.html">Live tvilling</a>
+        <a class="nav" href="feedback.html">Feedback</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="layout">
+    <section class="card">
+      <div class="hd">
+        <strong style="font-size:14px;">Grupperom</strong>
+        <span class="tag"><span class="dot info"></span>4 rom</span>
+      </div>
+      <div class="bd">
+        <div class="roomList" id="roomList"></div>
+        <div class="hr"></div>
+        <div class="note">
+          <strong>Tips:</strong> “Varm sommerdag” legger en kommentar i <em>Feedback</em> og vises også i <em>Bruker</em>-score.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="hd">
+        <strong style="font-size:14px;" id="roomTitle">Grupperom</strong>
+        <span class="tag" id="roomTag"><span class="dot ok"></span>OK</span>
+      </div>
+      <div class="bd">
+        <div class="grid" id="metricGrid"></div>
+
+        <div class="hr"></div>
+
+        <div class="split">
+          <div class="control">
+            <div class="row">
+              <div>
+                <label>Ventilasjon</label>
+                <div class="small">Auto/Manuell (demo)</div>
+              </div>
+              <div class="toggle on" id="togVent" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+            <div class="hr"></div>
+            <label for="ventLvl">Nivå</label>
+            <input id="ventLvl" type="range" min="1" max="5" value="3" />
+            <div class="small">Anbefalt: øk ved CO₂ &gt; 1000 ppm.</div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label>Varme</label>
+                <div class="small">Setpunkt (°C)</div>
+              </div>
+              <span class="tag" id="heatBadge"><span class="dot ok"></span>22°C</span>
+            </div>
+            <div class="hr"></div>
+            <label for="heatSet">Setpunkt</label>
+            <input id="heatSet" type="range" min="18" max="24" value="22" />
+            <div class="small">Ved varm dag: vurder lavere setpunkt / solskjerming.</div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label>Lys</label>
+                <div class="small">Dimming (%)</div>
+              </div>
+              <span class="tag" id="lightBadge"><span class="dot ok"></span>60%</span>
+            </div>
+            <div class="hr"></div>
+            <label for="lightDim">Dim</label>
+            <input id="lightDim" type="range" min="0" max="100" value="60" />
+            <div class="small">Dim ned ved mye dagslys.</div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label>Akustikk</label>
+                <div class="small">Adaptive plater (demo)</div>
+              </div>
+              <div class="toggle" id="togAc" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+            <div class="hr"></div>
+            <label for="acLvl">Struktur</label>
+            <input id="acLvl" type="range" min="0" max="100" value="20" />
+            <div class="small">Anbefalt ved støy &gt; 65 dBA.</div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="btnrow">
+          <button class="primary" id="btnNormal">Normal bruk</button>
+          <button id="btnFull">Fullt rom</button>
+          <button id="btnSummer">Varm sommerdag</button>
+          <button id="btnReset">Reset (reload)</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <strong style="font-size:14px; display:block; margin-bottom:10px;">Styringslogikk (demo)</strong>
+        <div class="note" id="logicNote"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  // --- shared selection ---
+  if(!localStorage.getItem("roomtwin_selected_room")){
+    localStorage.setItem("roomtwin_selected_room","r1");
+  }
+
+  const rooms = [
+    { id:"r1", name:"Grupperom 1", location:"Gløshaugen · A2-3.12", capacity:8, daylight:"Høy",
+      sensors:{ temp:22.2, co2:880, rh:38, lux:520, noise:54, energy:2.6 },
+      controls:{ ventAuto:true, ventLevel:3, heatSet:22, lightDim:60, acOn:false, acLevel:20 } },
+    { id:"r2", name:"Grupperom 2", location:"Gløshaugen · H1-2.08", capacity:6, daylight:"Middels",
+      sensors:{ temp:21.0, co2:1040, rh:35, lux:340, noise:60, energy:2.9 },
+      controls:{ ventAuto:true, ventLevel:4, heatSet:21, lightDim:70, acOn:false, acLevel:20 } },
+    { id:"r3", name:"Grupperom 3", location:"Gløshaugen · ITB-1.04", capacity:10, daylight:"Lav",
+      sensors:{ temp:22.8, co2:1160, rh:41, lux:260, noise:66, energy:3.6 },
+      controls:{ ventAuto:true, ventLevel:4, heatSet:22, lightDim:85, acOn:true, acLevel:45 } },
+    { id:"r4", name:"Grupperom 4", location:"Gløshaugen · KJ-4.18", capacity:12, daylight:"Høy",
+      sensors:{ temp:23.6, co2:920, rh:33, lux:610, noise:57, energy:3.1 },
+      controls:{ ventAuto:true, ventLevel:3, heatSet:22, lightDim:55, acOn:false, acLevel:25 } },
+  ];
+
+  const $ = (id)=>document.getElementById(id);
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+
+  function statusFor(metric, value){
+    if(metric==="co2"){ if(value<=900) return "ok"; if(value<=1200) return "warn"; return "bad"; }
+    if(metric==="noise"){ if(value<=55) return "ok"; if(value<=65) return "warn"; return "bad"; }
+    if(metric==="temp"){ if(value>=20.5 && value<=23.5) return "ok"; if(value>=19.5 && value<=24.5) return "warn"; return "bad"; }
+    if(metric==="lux"){ if(value>=300 && value<=700) return "ok"; if(value>=200 && value<=900) return "warn"; return "bad"; }
+    if(metric==="rh"){ if(value>=30 && value<=50) return "ok"; if(value>=25 && value<=60) return "warn"; return "bad"; }
+    return "ok";
+  }
+  function worstStatus(list){ if(list.includes("bad")) return "bad"; if(list.includes("warn")) return "warn"; return "ok"; }
+  function pretty(st){ return st==="ok"?"OK":st==="warn"?"Varsel":"Kritisk"; }
+  function dot(st){ return st==="ok"?"ok":st==="warn"?"warn":"bad"; }
+  function badge(st){ return st==="ok"?"ok":st==="warn"?"warn":"bad"; }
+  function fmt(v){ return Number.isInteger(v) ? String(v) : (Math.round(v*10)/10).toFixed(1); }
+
+  const saved = localStorage.getItem("roomtwin_selected_room");
+  let active = rooms.find(r => r.id === saved) || rooms[0];
+
+  function metricCard(key,label,value,unit,hint){
+    const st=statusFor(key,value);
+    return `
+      <div class="metric">
+        <div class="k">
+          <span>${label}</span>
+          <span class="badge ${badge(st)}">${pretty(st)}</span>
+        </div>
+        <div class="v">${fmt(value)} ${unit}</div>
+        <div class="small">${hint}</div>
+      </div>
+    `;
+  }
+
+  function setToggle(el,on){ el.classList.toggle("on",!!on); el.setAttribute("aria-checked",!!on); }
+  function bindToggle(el,get,set){
+    const flip=()=>{ set(!get()); renderAll(); };
+    el.addEventListener("click",flip);
+    el.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); flip(); }});
+  }
+
+  function renderRoomList(){
+    $("roomList").innerHTML = rooms.map(r=>{
+      const sts=[statusFor("co2",r.sensors.co2), statusFor("noise",r.sensors.noise), statusFor("temp",r.sensors.temp)];
+      const o=worstStatus(sts);
+      return `
+        <button class="roomBtn ${r.id===active.id?"active":""}" data-room="${r.id}">
+          <div class="roomTop">
+            <div>
+              <div class="roomName">${r.name}</div>
+              <div class="roomMeta">${r.location} · Kapasitet ${r.capacity}</div>
+            </div>
+            <span class="tag"><span class="dot ${dot(o)}"></span>${pretty(o)}</span>
+          </div>
+        </button>
+      `;
+    }).join("");
+
+    [...document.querySelectorAll(".roomBtn")].forEach(b=>{
+      b.addEventListener("click",()=>{
+        active = rooms.find(r=>r.id===b.dataset.room);
+        localStorage.setItem("roomtwin_selected_room", active.id);
+        renderAll();
+      });
+    });
+  }
+
+  function renderMetrics(){
+    const s=active.sensors;
+    $("metricGrid").innerHTML = [
+      metricCard("co2","CO₂",s.co2,"ppm","Mål: < 1000 ppm for god luftkvalitet."),
+      metricCard("temp","Temperatur",s.temp,"°C","Komfort: ca. 21–23°C."),
+      metricCard("rh","Luftfuktighet",s.rh,"%","Anbefalt: ca. 30–50%."),
+      metricCard("lux","Lysnivå",s.lux,"lux","Arbeidslys: typisk 300–500 lux."),
+      metricCard("noise","Støy",s.noise,"dBA","> 65 dBA → vanskelig samarbeid."),
+      metricCard("energy","Energi",s.energy,"kWh","Siste time (simulert).")
+    ].join("");
+  }
+
+  function renderHeader(){
+    $("roomTitle").textContent = active.name;
+    const sts=[
+      statusFor("co2",active.sensors.co2),
+      statusFor("noise",active.sensors.noise),
+      statusFor("temp",active.sensors.temp),
+      statusFor("lux",active.sensors.lux),
+      statusFor("rh",active.sensors.rh),
+    ];
+    const o=worstStatus(sts);
+    $("roomTag").innerHTML = `<span class="dot ${dot(o)}"></span>${pretty(o)}`;
+  }
+
+  function applyControls(){
+    const s=active.sensors;
+    const c=active.controls;
+
+    s.co2 = clamp(Math.round((s.co2 - c.ventLevel*35 + 15)*10)/10, 420, 2000);
+    const drift=(c.heatSet - s.temp)*0.10;
+    s.temp = clamp(Math.round((s.temp + drift)*10)/10, 17, 27);
+
+    const daylightBase = active.daylight==="Høy" ? 450 : active.daylight==="Middels" ? 320 : 220;
+    s.lux = clamp(Math.round(daylightBase + c.lightDim*4), 0, 1500);
+
+    const damp = c.acOn ? c.acLevel*0.10 : 0;
+    s.noise = clamp(Math.round((s.noise - damp + 0.6)*10)/10, 35, 85);
+
+    s.energy = clamp(Math.round((0.9 + c.ventLevel*0.35 + (c.heatSet-18)*0.18 + c.lightDim/100*0.6)*10)/10, 0.5, 8.0);
+  }
+
+  function renderControls(){
+    const c=active.controls;
+    setToggle($("togVent"), c.ventAuto);
+    setToggle($("togAc"), c.acOn);
+    $("ventLvl").value=c.ventLevel;
+    $("heatSet").value=c.heatSet;
+    $("lightDim").value=c.lightDim;
+    $("acLvl").value=c.acLevel;
+
+    $("heatBadge").innerHTML = `<span class="dot ok"></span>${c.heatSet}°C`;
+    $("lightBadge").innerHTML = `<span class="dot ok"></span>${c.lightDim}%`;
+  }
+
+  function renderLogic(){
+    const s=active.sensors;
+    const c=active.controls;
+    const lines=[];
+    lines.push(s.co2>1000 ? "CO₂ > 1000 ppm → øk ventilasjon (nivå +1)." : "CO₂ OK → normal ventilasjon.");
+    lines.push(s.noise>65 ? "Støy > 65 dBA → aktiver akustikkmodus." : "Støy OK → akustikk av.");
+    lines.push(s.temp>23.5 ? "Temp høy → senk setpunkt 1°C / vurder solskjerming." : "Temp OK → hold setpunkt.");
+    lines.push(`Aktivt: Vent ${c.ventLevel}/5 · Varme ${c.heatSet}°C · Lys ${c.lightDim}% · Akustikk ${c.acOn?"ON":"OFF"}`);
+    $("logicNote").innerHTML = lines.map(x=>`• ${x}`).join("<br>");
+  }
+
+  bindToggle($("togVent"), ()=>active.controls.ventAuto, v=>active.controls.ventAuto=v);
+  bindToggle($("togAc"), ()=>active.controls.acOn, v=>active.controls.acOn=v);
+
+  $("ventLvl").addEventListener("input", ()=>{ active.controls.ventLevel=Number($("ventLvl").value); applyControls(); renderAll(); });
+  $("heatSet").addEventListener("input", ()=>{ active.controls.heatSet=Number($("heatSet").value); applyControls(); renderAll(); });
+  $("lightDim").addEventListener("input", ()=>{ active.controls.lightDim=Number($("lightDim").value); applyControls(); renderAll(); });
+  $("acLvl").addEventListener("input", ()=>{ active.controls.acLevel=Number($("acLvl").value); applyControls(); renderAll(); });
+
+  $("btnNormal").addEventListener("click", ()=>{
+    active.sensors.co2=860; active.sensors.noise=54; active.sensors.temp=22.1; active.sensors.rh=37;
+    active.controls.ventLevel=3; active.controls.acOn=false; active.controls.acLevel=20;
+    renderAll();
+  });
+
+  $("btnFull").addEventListener("click", ()=>{
+    active.sensors.co2=1320; active.sensors.noise=71; active.sensors.temp=23.2;
+    active.controls.ventLevel=4; active.controls.acOn=true; active.controls.acLevel=55;
+    renderAll();
+  });
+
+  $("btnSummer").addEventListener("click", ()=>{
+    active.sensors.temp=25.2;
+    active.sensors.co2=Math.max(active.sensors.co2, 980);
+    active.sensors.noise=Math.max(active.sensors.noise, 58);
+
+    const key="roomtwin_extra_feedback";
+    const extra={ room: active.name, date:"24. juni 2025", time:"12:45", stars:3, text:"Det er for varmt i dag." };
+    const arr=JSON.parse(localStorage.getItem(key) || "[]");
+    arr.unshift(extra);
+    localStorage.setItem(key, JSON.stringify(arr));
+
+    alert("Demo: ‘Det er for varmt i dag’ (24. juni 2025) er lagt inn i Feedback.");
+    renderAll();
+  });
+
+  $("btnReset").addEventListener("click", ()=>location.reload());
+
+  function renderAll(){
+    renderRoomList();
+    renderHeader();
+    renderMetrics();
+    renderControls();
+    renderLogic();
+  }
+  renderAll();
+
+  setInterval(()=>{
+    active.sensors.co2 = clamp(active.sensors.co2 + (Math.random()*30-12), 420, 2000);
+    active.sensors.noise = clamp(active.sensors.noise + (Math.random()*3-1), 35, 85);
+    active.sensors.temp = clamp(Math.round((active.sensors.temp + (Math.random()*0.12-0.04))*10)/10, 17, 27);
+    renderAll();
+  }, 6000);
+</script>
+</body>
+</html>

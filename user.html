@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RoomTwin – Brukerforside</title>
+  <style>
+    :root{
+      --bg:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --shadow:0 10px 30px rgba(2,6,23,.08); --shadow2:0 6px 16px rgba(2,6,23,.07);
+      --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444; --info:#2563eb;
+      --chip:#f1f5f9;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    header{border-bottom:1px solid var(--line); background:rgba(255,255,255,.92); backdrop-filter:blur(10px); position:sticky; top:0; z-index:10}
+    .wrap{max-width:1100px; margin:0 auto; padding:16px 18px}
+    .top{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#16a34a); box-shadow:0 10px 25px rgba(37,99,235,.18)}
+    h1{margin:0;font-size:16px}
+    .sub{font-size:12px;color:var(--muted)}
+    nav{display:flex; gap:10px; flex-wrap:wrap}
+    a.nav{font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    a.nav.active{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06); color:var(--text); font-weight:900}
+
+    main{max-width:1100px; margin:0 auto; padding:18px}
+    .hero{
+      border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:var(--shadow);
+      padding:18px; display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;
+    }
+    .kicker{display:inline-flex; gap:8px; align-items:center; font-size:12px; color:var(--muted);
+      background:var(--chip); border:1px solid var(--line); padding:6px 10px; border-radius:999px}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.info{background:var(--info)}
+    .heroTitle{margin:10px 0 6px; font-size:24px; letter-spacing:-.2px}
+    .lead{margin:0; color:var(--muted); line-height:1.55; font-size:13px; max-width:68ch}
+    .pill{
+      padding:8px 10px; border:1px solid var(--line); border-radius:999px; background:#fff;
+      color:var(--muted); font-size:12px; box-shadow:0 2px 8px rgba(2,6,23,.04)
+    }
+
+    .grid{margin-top:14px; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px}
+    @media (max-width:800px){.grid{grid-template-columns:1fr}}
+    .card{border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:var(--shadow2); overflow:hidden}
+    .hd{padding:14px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .bd{padding:14px}
+    .roomRow{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    .roomName{font-weight:900}
+    .roomMeta{margin-top:4px; color:var(--muted); font-size:12px}
+    .score{min-width:96px; display:flex; flex-direction:column; align-items:flex-end; gap:6px;}
+    .scoreNum{font-weight:1000; font-size:26px; letter-spacing:-.3px}
+    .tag{display:inline-flex; gap:6px; align-items:center; font-size:12px; color:var(--muted);
+      background:var(--chip); border:1px solid var(--line); padding:6px 10px; border-radius:999px; white-space:nowrap}
+    .tag.ok{border-color:rgba(22,163,74,.35); color:rgba(22,163,74,.95); background:rgba(22,163,74,.06)}
+    .tag.warn{border-color:rgba(245,158,11,.35); color:rgba(245,158,11,.95); background:rgba(245,158,11,.06)}
+    .tag.bad{border-color:rgba(239,68,68,.35); color:rgba(239,68,68,.95); background:rgba(239,68,68,.06)}
+
+    .mini{margin-top:10px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px}
+    .tile{border:1px solid var(--line); border-radius:14px; padding:10px; background:#fff}
+    .k{font-size:11px; color:var(--muted); display:flex; justify-content:space-between; gap:8px}
+    .v{margin-top:6px; font-weight:900}
+    .hint{margin-top:10px; font-size:12px; color:var(--muted); line-height:1.4}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    button{appearance:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:900; box-shadow:0 2px 10px rgba(2,6,23,.04)}
+    button.primary{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>RoomTwin – Bruker</h1>
+          <div class="sub">Enkelt system: romscore (sensor + feedback)</div>
+        </div>
+      </div>
+      <nav>
+        <a class="nav" href="index.html">Forside</a>
+        <a class="nav active" href="user.html">Bruker</a>
+        <a class="nav" href="dashboard.html">Dashboard</a>
+        <a class="nav" href="twin-live.html">Live tvilling</a>
+        <a class="nav" href="feedback.html">Feedback</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <div class="kicker"><span class="dot info"></span> Velg rom basert på “Romscore”</div>
+      <div class="heroTitle">Romscore: rask oversikt før du setter deg</div>
+      <p class="lead">
+        Romscore kombinerer (simulerte) sensorer (CO₂, temperatur, støy, lys) og brukerfeedback.
+        Velger du et rom her, åpner Dashboard/Live automatisk samme rom.
+      </p>
+      <div class="btnrow">
+        <button class="primary" id="btnRefresh">Oppdater score (demo)</button>
+        <button id="btnOpenLive">Se tvillingen jobbe live</button>
+      </div>
+    </div>
+    <div class="pill">Oppdatert: <strong id="updatedAt">nå</strong></div>
+  </section>
+
+  <div class="grid" id="roomCards"></div>
+</main>
+
+<script>
+  if(!localStorage.getItem("roomtwin_selected_room")){
+    localStorage.setItem("roomtwin_selected_room","r1");
+  }
+
+  const rooms = [
+    { id:"r1", name:"Grupperom 1", location:"Gløshaugen · A2-3.12", cap:8, daylight:"Høy",
+      s:{ co2:880, temp:22.2, noise:54, lux:520 }, baseStars:4.4 },
+    { id:"r2", name:"Grupperom 2", location:"Gløshaugen · H1-2.08", cap:6, daylight:"Middels",
+      s:{ co2:1040, temp:21.0, noise:60, lux:340 }, baseStars:3.6 },
+    { id:"r3", name:"Grupperom 3", location:"Gløshaugen · ITB-1.04", cap:10, daylight:"Lav",
+      s:{ co2:1160, temp:22.8, noise:66, lux:260 }, baseStars:3.0 },
+    { id:"r4", name:"Grupperom 4", location:"Gløshaugen · KJ-4.18", cap:12, daylight:"Høy",
+      s:{ co2:920, temp:23.6, noise:57, lux:610 }, baseStars:4.1 },
+  ];
+
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const now=()=>new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+  function sensorScore(s){
+    let score=100;
+    if(s.co2>1200) score-=30; else if(s.co2>1000) score-=18; else if(s.co2>900) score-=8;
+    if(s.temp<20 || s.temp>24.5) score-=18; else if(s.temp<20.5 || s.temp>23.5) score-=8;
+    if(s.noise>65) score-=22; else if(s.noise>55) score-=10;
+    if(s.lux<250) score-=10; else if(s.lux<300) score-=5;
+    return clamp(Math.round(score), 0, 100);
+  }
+
+  function roomScore(room){
+    const sScore = sensorScore(room.s);
+    const feedback = clamp(room.baseStars, 1, 5);
+    const fScore = clamp(Math.round((feedback/5)*100), 0, 100);
+    const total = Math.round(0.65*sScore + 0.35*fScore);
+    return { total, sScore, fScore, feedback };
+  }
+
+  function labelFor(total){
+    if(total>=80) return { cls:"ok", text:"Anbefalt" };
+    if(total>=65) return { cls:"warn", text:"OK" };
+    return { cls:"bad", text:"Unngå nå" };
+  }
+
+  function render(){
+    document.getElementById("updatedAt").textContent = now();
+    const extra = JSON.parse(localStorage.getItem("roomtwin_extra_feedback") || "[]");
+
+    document.getElementById("roomCards").innerHTML = rooms.map(r=>{
+      const rs = roomScore(r);
+      const lab = labelFor(rs.total);
+
+      const hit = extra.find(x => x.room === r.name && (x.text||"").toLowerCase().includes("varm"));
+      const hotLine = hit ? `🌞 <strong>${hit.text}</strong> (${hit.date})` : `Ingen nye alarmer fra brukere`;
+
+      return `
+        <section class="card">
+          <div class="hd">
+            <strong style="font-size:14px;">${r.name}</strong>
+            <span class="tag ${lab.cls}">${lab.text}</span>
+          </div>
+          <div class="bd">
+            <div class="roomRow">
+              <div>
+                <div class="roomName">${r.location}</div>
+                <div class="roomMeta">Kapasitet ${r.cap} · Dagslys: ${r.daylight}</div>
+              </div>
+              <div class="score">
+                <div class="scoreNum">${rs.total}</div>
+                <div class="roomMeta">Romscore /100</div>
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="tile"><div class="k">CO₂</div><div class="v">${Math.round(r.s.co2)} ppm</div></div>
+              <div class="tile"><div class="k">Temp</div><div class="v">${r.s.temp.toFixed(1)} °C</div></div>
+              <div class="tile"><div class="k">Støy</div><div class="v">${Math.round(r.s.noise)} dBA</div></div>
+              <div class="tile"><div class="k">Lys</div><div class="v">${Math.round(r.s.lux)} lux</div></div>
+            </div>
+
+            <div class="hint">
+              <div>⭐ Historisk rating: <strong>${rs.feedback.toFixed(1)}/5</strong> · Sensor-score: <strong>${rs.sScore}/100</strong></div>
+              <div style="margin-top:6px; color:#475569">${hotLine}</div>
+            </div>
+
+            <div class="btnrow">
+              <button class="primary" onclick="openDash('${r.id}')">Åpne dashboard</button>
+              <button onclick="openLive('${r.id}')">Se live</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }).join("");
+  }
+
+  window.openDash = (id)=>{
+    localStorage.setItem("roomtwin_selected_room", id);
+    location.href = "dashboard.html";
+  };
+  window.openLive = (id)=>{
+    localStorage.setItem("roomtwin_selected_room", id);
+    location.href = "twin-live.html";
+  };
+
+  document.getElementById("btnRefresh").addEventListener("click", ()=>{
+    rooms.forEach(r=>{
+      r.s.co2 = clamp(r.s.co2 + (Math.random()*60 - 20), 420, 1800);
+      r.s.temp = clamp(Math.round((r.s.temp + (Math.random()*0.35 - 0.08))*10)/10, 18, 27);
+      r.s.noise = clamp(r.s.noise + (Math.random()*5 - 2), 40, 80);
+      r.s.lux = clamp(r.s.lux + (Math.random()*120 - 40), 80, 1200);
+    });
+    render();
+  });
+
+  document.getElementById("btnOpenLive").addEventListener("click", ()=>{
+    location.href = "twin-live.html";
+  });
+
+  render();
+</script>
+</body>
+</html>
